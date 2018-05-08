@@ -23,29 +23,34 @@ if (isset($_FILES['importFile']['tmp_name'])) {
                 }
                 $url = trim($data[0]);
                 $htmlData = $scraper->curlTo($url);
+                $status = 'Ended or removed by ebay';
                 if($htmlData){
                   $htmlNew = preg_replace('#<script(.*?)>(.*?)</script>#is', '', $scraper->delete_all_between('<head>', '</head>', trim($htmlData['html'])));
 
-                  $myfile = fopen('tmp/tmp.php', "w") or die("Unable to open file!");
+                  $myfile = fopen('../tmp/tmp.php', "w") or die("Unable to open file!");
                   fwrite($myfile, $htmlNew);
                   fclose($myfile);
 
-                  $htmlNew = file_get_contents('tmp/tmp.php');
+                  $htmlNew = file_get_contents('../tmp/tmp.php');
                   $html = str_get_html($htmlNew);
                   if($html != false){
-                    $status = '';
                     $errorHeader = $html->find('.error-header', 0);
                     if($errorHeader){
                       $status = 'Ended or removed by ebay';
                     }else{
                       $availabilityContainer = $html->find('#qtySubTxt', 0);
                       if($availabilityContainer){
-                        $availability = preg_replace("/[^0-9]/", '', $availabilityContainer);
-                        if($availability > 0){
+                        if(strpos($availabilityContainer->plaintext, 'Limited') !== false){
                           $status = 'active';
                         }else{
-                          $status = 'active(out of stock)';
+                          $availability = preg_replace("/[^0-9]/", '', $availabilityContainer->plaintext);
+                          if($availability > 0){
+                            $status = 'active';
+                          }else{
+                            $status = 'active(out of stock)';
+                          }
                         }
+
                       }else{
                         $endedContainer = $html->find('.vi-end-lb', 0);
                         if($endedContainer){

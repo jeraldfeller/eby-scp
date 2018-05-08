@@ -24,9 +24,13 @@
                 </div>
               </div>
               <div class="col-md-12 text-center">
-                  <button type="submit" class="btn btn-primary"><i class="fa fa-upload"></i> IMPORT</button>
+                  <button type="submit" class="btn btn-primary" id="submitBtn"><i class="fa fa-upload"></i> IMPORT</button>
               </div>
+
             </form>
+            <div class="col-md-12 text-center">
+                <button class="btn btn-primary" id="downloadtBtn"><i class="fa fa-download"></i> DOWNLOAD</button>
+            </div>
         </div>
       </div>
 
@@ -35,7 +39,15 @@
                 $fileName = $(this).val().split('\\');
                 $('#upload-file-info').html($fileName.pop());
             });
+
+            $('#downloadtBtn').click(function(){
+              location.href = 'export.php';
+            });
+            $('#submitBtn').keypress(function(){
+              $('#submitBtn').html('<i class="fa fa-spinner fa-spin"></i>');
+            })
             $("form#importFile").submit(function(event){
+
 
             //disable the default form submission
             event.preventDefault();
@@ -51,6 +63,7 @@
                 contentType: false,
                 processData: false,
                 success: function(response){
+                    $('#submitBtn').html('<i class="fa fa-upload"></i> IMPORT');
                   console.log(response);
                   if(response != 1){
                     alert('Please complete the input fields.');
