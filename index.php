@@ -43,7 +43,7 @@
 
             var formData = new FormData($(this)[0]);
             $.ajax({
-                url: '/action/exec.php',
+                url: 'action/exec.php',
                 type: 'POST',
                 data: formData,
                 async: false,

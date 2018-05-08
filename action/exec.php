@@ -5,7 +5,7 @@ require '../Model/simple_html_dom.php';
 
 $scraper = new Scraper();
 $csv = 'ebay_list.csv';
-$data[] = implode('","', array(
+$csvData[] = implode('","', array(
     'eBayItemUrl',
     'status'
 ));
@@ -22,15 +22,15 @@ if (isset($_FILES['importFile']['tmp_name'])) {
                     continue;
                 }
                 $url = trim($data[0]);
-                $htmlData = $scraper->curlProxy($url);
+                $htmlData = $scraper->curlTo($url);
                 if($htmlData){
                   $htmlNew = preg_replace('#<script(.*?)>(.*?)</script>#is', '', $scraper->delete_all_between('<head>', '</head>', trim($htmlData['html'])));
 
-                  $myfile = fopen(ROOT . '/tmp/tmp.php', "w") or die("Unable to open file!");
+                  $myfile = fopen('tmp/tmp.php', "w") or die("Unable to open file!");
                   fwrite($myfile, $htmlNew);
                   fclose($myfile);
 
-                  $htmlNew = file_get_contents(ROOT  . '/tmp/tmp.php');
+                  $htmlNew = file_get_contents('tmp/tmp.php');
                   $html = str_get_html($htmlNew);
                   if($html != false){
                     $status = '';
@@ -55,23 +55,28 @@ if (isset($_FILES['importFile']['tmp_name'])) {
                     }
 
 
-                    // record url
-                    $data[] = implode('","', array(
-                        $url,
-                        $status
-                      )
-                    );
 
+
+                  }else{
+                    $status = 'Ended or removed by ebay';
                   }
+                }else{
+                  $status = 'Ended or removed by ebay';
                 }
-
+                // record url
+                $csvData[] = implode('","', array(
+                    $url,
+                    $status
+                  )
+                );
+                sleep(mt_rand(5, 10));
             }
 
             fclose($fileHandle);
 
 
-            $file = fopen($csv,"a");
-            foreach ($data as $line){
+            $file = fopen($csv,"w");
+            foreach ($csvData as $line){
                 fputcsv($file, explode('","',$line));
             }
             fclose($file);

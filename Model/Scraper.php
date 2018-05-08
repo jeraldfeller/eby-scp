@@ -26,7 +26,7 @@ class Scraper{
     	curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, FALSE);
     	$contents = curl_exec($curl);
     	curl_close($curl);
-    	return $contents;
+    	return array('html' => $contents);
   }
 
   public function delete_all_between($beginning, $end, $string) {
