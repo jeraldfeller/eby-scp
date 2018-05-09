@@ -28,10 +28,13 @@ if (isset($_FILES['importFile']['tmp_name'])) {
 $flag = true;
 $spreadsheet_url = $_POST['url'];
 if(!ini_set('default_socket_timeout', 15)) echo "<!-- unable to change socket timeout -->";
-
+$i = 0;
 if (($handle = fopen($spreadsheet_url, "r")) !== FALSE) {
     while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
-        $urls[] = $data;
+        if($i > 0 ){
+            $urls[] = $data;
+        }
+        $i++;
     }
     fclose($handle);
 

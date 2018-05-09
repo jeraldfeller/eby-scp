@@ -28,14 +28,17 @@
             <div class="col-md-12" style="margin-top: 25px;"></div>
             <form id="importFile" class="form-inline col-md-12">
               <div class="col-md-12">
-                <input style="width: 100%;" type="text" class="form-control" name="url" placeholder="published csv url">
+                <input style="width: 100%;" type="text" class="form-control text-url" name="url" placeholder="published csv url">
               </div>
-              <div class="col-md-12 progress-container" style="display: none;">
+              <div class="col-md-12 progress-container" style="display: none; margin-top: 12px;">
                 <div class="progress">
                     <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0"></div>
                 </div>
                 <div style="text-align: center;">
                   <span class="current_index"></span> out of <span class="total_count"></span>
+                </div>
+                <div style="text-align: center; display: none;">
+                  <span class="compiling-message">Compiling.....</span>
                 </div>
 
               </div>
@@ -46,6 +49,10 @@
             </form>
             <div class="col-md-12 text-center" style="margin-top: 12px;">
                 <button class="btn btn-primary" id="downloadtBtn"><i class="fa fa-download"></i> DOWNLOAD</button>
+            </div>
+
+            <div class="col-md-12" style="margin-top: 12px;">
+              <textarea rows="5" class="form-control ip-proxy"></textarea>
             </div>
         </div>
       </div>
@@ -104,10 +111,21 @@
       </script>
       <script>
         var urlSet = [];
-        function exec($urls, $i){
+        var lines = $('.ip-proxy').val().split(/\n/);
+        var proxy = [];
+        for (var i=0; i < lines.length; i++) {
+          // only push this line if it contains a non whitespace character.
+          if (/\S/.test(lines[i])) {
+            proxy.push($.trim(lines[i]));
+          }
+        }
+
+        console.log(proxy);
+        function exec($urls, $i, proxy){
           $urlList = $urls;
+
           if($i < $urlList.length){
-            curlTo($urlList[$i]).done(function(response){
+            curlTo($urlList[$i][0], proxy).done(function(response){
                 urlSet.push(response);
                 $progWidth = ($i + 1) * 100 / $urlList.length;
                 $('.progress-bar').attr('aria-valuenow', ($i + 1));
@@ -118,20 +136,23 @@
             });
           }else{
             console.log(urlSet);
+            $('.compiling-message').css('display', 'inline');
             // compile csv file
             compileCsv(urlSet).done(function(){
 
               setTimeout(function(){
+                $('.compiling-message').css('display', 'none');
                 $('.progress-container').css('display', 'none');
+                $('.text-url').value('');
                 $('#submitBtn').html('<i class="fa fa-upload"></i> IMPORT');
                 alert('Process Successfully Completed!');
-              }, 3000);
+              }, 1000);
 
             });
           }
 
         }
-        function curlTo($url, $index){
+        function curlTo($url, $proxy){
           $dfd = $.Deferred();
             if(XMLHttpRequestObject)
             {
@@ -153,7 +174,7 @@
 
                     }
                 }
-                XMLHttpRequestObject.send("param= "+ JSON.stringify({url: $url}));
+                XMLHttpRequestObject.send("param= "+ JSON.stringify({url: $url, proxy: $proxy}));
 
 
             }

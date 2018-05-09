@@ -1,8 +1,8 @@
 <?php
 
 class Scraper{
-    public function curlTo($url){
-
+    public function curlTo($url, $proxy){
+      /*
       $proxy = array(
         '31.132.1.191:3128',
         '81.92.194.178:3128',
@@ -15,6 +15,7 @@ class Scraper{
         '81.92.194.151:3128',
         '94.46.184.249:3128'
       );
+      */
 
       $curl = curl_init();
     	curl_setopt($curl, CURLOPT_URL, $url);

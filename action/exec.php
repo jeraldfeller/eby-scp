@@ -8,7 +8,7 @@ $scraper = new Scraper();
 
 $postData = json_decode($_POST['param'], true);
                 $url = trim($postData['url']);
-                $htmlData = $scraper->curlTo($url);
+                $htmlData = $scraper->curlTo($url, $postData['proxy']);
                 $status = 'Ended or removed by ebay';
                 if($htmlData){
                   $htmlNew = preg_replace('#<script(.*?)>(.*?)</script>#is', '', $scraper->delete_all_between('<head>', '</head>', trim($htmlData['html'])));
