@@ -4,24 +4,10 @@ require '../Model/Scraper.php';
 require '../Model/simple_html_dom.php';
 
 $scraper = new Scraper();
-$csv = 'ebay_list.csv';
-$csvData[] = implode('","', array(
-    'eBayItemUrl',
-    'status'
-));
 
-if (isset($_FILES['importFile']['tmp_name'])) {
-        if (pathinfo($_FILES['importFile']['name'], PATHINFO_EXTENSION) == 'csv') {
-            $file = $_FILES['importFile']['tmp_name'];
-            $fileName = $_FILES['importFile']['name'];
-            $flag = true;
-            $fileHandle = fopen($_FILES['importFile']['tmp_name'], "r");
-            while (($data = fgetcsv($fileHandle, 10000, ",")) !== FALSE) {
-                if ($flag) {
-                    $flag = false;
-                    continue;
-                }
-                $url = trim($data[0]);
+
+$postData = json_decode($_POST['param'], true);
+                $url = trim($postData['url']);
                 $htmlData = $scraper->curlTo($url);
                 $status = 'Ended or removed by ebay';
                 if($htmlData){
@@ -68,32 +54,9 @@ if (isset($_FILES['importFile']['tmp_name'])) {
                 }else{
                   $status = 'Ended or removed by ebay';
                 }
-                // record url
-                $csvData[] = implode('","', array(
-                    $url,
-                    $status
-                  )
-                );
-                sleep(mt_rand(5, 10));
-            }
-
-            fclose($fileHandle);
 
 
-            $file = fopen($csv,"w");
-            foreach ($csvData as $line){
-                fputcsv($file, explode('","',$line));
-            }
-            fclose($file);
-        }
-
-
-
-
-      echo true;
-    }else{
-      echo false;
-    }
+                echo json_encode(array('url' => $url, 'status' => $status));
 
 
 ?>
