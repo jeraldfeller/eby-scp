@@ -143,7 +143,7 @@
               setTimeout(function(){
                 $('.compiling-message').css('display', 'none');
                 $('.progress-container').css('display', 'none');
-                $('.text-url').value('');
+                //$('.text-url').value('');
                 $('#submitBtn').html('<i class="fa fa-upload"></i> IMPORT');
                 alert('Process Successfully Completed!');
               }, 1000);
