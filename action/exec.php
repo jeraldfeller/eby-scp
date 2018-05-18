@@ -28,6 +28,8 @@ $postData = json_decode($_POST['param'], true);
                       if($availabilityContainer){
                         if(strpos($availabilityContainer->plaintext, 'Limited') !== false){
                           $status = 'active';
+                        }else if(strpos($availabilityContainer->plaintext, 'one') !== false){
+                          $status = 'active';
                         }else{
                           $availability = preg_replace("/[^0-9]/", '', $availabilityContainer->plaintext);
                           if($availability > 0){
