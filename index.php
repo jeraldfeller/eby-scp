@@ -1,3 +1,14 @@
+<?php
+require 'Model/Init.php';
+require 'Model/Sraper.php';
+$scraper = new Scraper();
+$proxyList = $scraper->getProxy();
+$proxy = '';
+foreach($proxyList as $row){
+  $proxy .= "$row['proxy']\n";
+}
+
+?>
 <!DOCTYPE html>
 <html>
   <head>
@@ -52,12 +63,31 @@
             </div>
 
             <div class="col-md-12" style="margin-top: 12px;">
-              <textarea rows="5" class="form-control ip-proxy"></textarea>
+              <textarea rows="5" class="form-control ip-proxy"><?php echo $proxy; ?></textarea>
+            </div>
+            <div class="col-md-12" style="margin-top: 12px;">
+                <button class="btn btn-primary" id="updateProxyBtn">Update Proxy List</button>
             </div>
         </div>
       </div>
 
       <script>
+
+      // Proxy Add/Update
+          $('#updateProxyBtn').click(function(){
+            $(this).html('<i class="fa fa-spinner fa-spin"></i>');
+            var urlSet = [];
+            var lines = $('.ip-proxy').val().split(/\n/);
+            var proxy = [];
+            for (var i=0; i < lines.length; i++) {
+              // only push this line if it contains a non whitespace character.
+              if (/\S/.test(lines[i])) {
+                proxy.push($.trim(lines[i]));
+              }
+            }
+
+            updateProxy(proxy);
+          });
             $('#import-file-holder').on('change', function(){
                 $fileName = $(this).val().split('\\');
                 $('#upload-file-info').html($fileName.pop());
@@ -211,6 +241,36 @@
 
           return $dfd.promise();
         }
+
+
+        function updateProxy($proxy) {
+
+        if (XMLHttpRequestObject) {
+
+          XMLHttpRequestObject.open("POST", "action/proxy.php");
+
+
+          XMLHttpRequestObject.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+
+          XMLHttpRequestObject.onreadystatechange = function () {
+            if (XMLHttpRequestObject.readyState == 4 && XMLHttpRequestObject.status == 200) {
+              var response = $.parseJSON(XMLHttpRequestObject.responseText);
+              $('#updateProxyBtn').html('Update Proxy List');
+              alert('Proxy List Updated');
+              exec();
+            }
+            if (XMLHttpRequestObject.status == 408 || XMLHttpRequestObject.status == 503 || XMLHttpRequestObject.status == 500) {
+              alert('Something went wrong, please try again');
+            }
+          }
+          XMLHttpRequestObject.send("param= " + JSON.stringify({proxy: $proxy}));
+
+
+        }
+
+        return false
+      }
+
       </script>
   </body>
 </html>

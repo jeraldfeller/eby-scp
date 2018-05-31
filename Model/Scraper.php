@@ -1,6 +1,39 @@
 <?php
 
 class Scraper{
+    public $debug = TRUE;
+    protected $db_pdo;
+
+    public function getProxy(){
+      $pdo = $this->getPdo();
+      $sql = 'SELECT * FROM `proxy_list_app_1`';
+      $stmt = $pdo->prepare($sql);
+      $stmt->execute();
+      $content = array();
+      while($row = $stmt->fetch(PDO::FETCH_ASSOC))
+      {
+            $content[] = $row;
+      }
+     return $content;
+    }
+
+    public function addProxy($ip){
+        $pdo = $this->getPdo();
+        $sql = 'INSERT INTO `proxy_list_app_1` SET(`proxy`) VALUES ("'.$ip.'")';
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute();
+
+        return true;
+    }
+
+    public function deleteProxy(){
+      $pdo = $this->getPdo();
+      $sql = 'DELETE * FROM `proxy_list_app_1`';
+      $stmt = $pdo->prepare($sql);
+      $stmt->execute();
+
+      return true;
+    }
     public function curlTo($url, $proxy){
       /*
       $proxy = array(
@@ -41,6 +74,36 @@ class Scraper{
 
     return str_replace($textToDelete, '', $string);
   }
+
+  public function getPdo()
+
+	{
+
+        if (!$this->db_pdo)
+
+        {
+
+            if ($this->debug)
+
+            {
+
+                    $this->db_pdo = new PDO(DB_DSN, DB_USERNAME, DB_PASS, array(PDO::ATTR_ERRMODE=> PDO::ERRMODE_WARNING));
+
+            }
+
+            else
+
+            {
+
+                $this->db_pdo = new PDO(DB_DSN, DB_USERNAME, DB_PASS);
+
+            }
+
+        }
+
+        return $this->db_pdo;
+
+    }
 }
 
 
