@@ -1,11 +1,11 @@
 <?php
 require 'Model/Init.php';
-require 'Model/Sraper.php';
+require 'Model/Scraper.php';
 $scraper = new Scraper();
 $proxyList = $scraper->getProxy();
 $proxy = '';
 foreach($proxyList as $row){
-  $proxy .= "$row['proxy']\n";
+  $proxy .= $row['proxy']."\n";
 }
 
 ?>

@@ -28,7 +28,7 @@ class Scraper{
 
     public function deleteProxy(){
       $pdo = $this->getPdo();
-      $sql = 'DELETE * FROM `proxy_list_app_1`';
+      $sql = 'DELETE FROM `proxy_list_app_1`';
       $stmt = $pdo->prepare($sql);
       $stmt->execute();
 
