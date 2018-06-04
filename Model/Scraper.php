@@ -19,7 +19,7 @@ class Scraper{
 
     public function addProxy($ip){
         $pdo = $this->getPdo();
-        $sql = 'INSERT INTO `proxy_list_app_1` SET(`proxy`) VALUES ("'.$ip.'")';
+        $sql = 'INSERT INTO `proxy_list_app_1` (`proxy`) VALUES ("'.$ip.'")';
         $stmt = $pdo->prepare($sql);
         $stmt->execute();
 

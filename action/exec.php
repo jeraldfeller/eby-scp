@@ -21,6 +21,12 @@ $postData = json_decode($_POST['param'], true);
                   $html = str_get_html($htmlNew);
                   if($html != false){
                     $errorHeader = $html->find('.error-header', 0);
+                    $qtySold = $html->find('.vi-qty-pur-lnk', 0);
+                    if($qtySold){
+                      $soldCount = $qtySold->plaintext;
+                    }else{
+                      $soldCount = '';
+                    }
                     if($errorHeader){
                       $status = 'Ended or removed by ebay';
                     }else{
@@ -58,7 +64,7 @@ $postData = json_decode($_POST['param'], true);
                 }
 
 
-                echo json_encode(array('url' => $url, 'status' => $status));
+                echo json_encode(array('url' => $url, 'status' => $status, 'sold_count' => $soldCount));
 
 
 ?>

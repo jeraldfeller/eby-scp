@@ -4,14 +4,16 @@ $data = json_decode($_POST['param'], true);
 $csv = 'ebay_list.csv';
 $csvData[] = implode('","', array(
     'eBayItemUrl',
-    'status'
+    'status',
+    'sold count'
 ));
 foreach($data['url'] as $row){
   // record url
 
   $csvData[] = implode('","', array(
       $row['url'],
-      $row['status']
+      $row['status'],
+      $row['sold_count']
     )
   );
 }
